@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PokemonRepositoryPort {
      List<Pokemon> findPaginated(int page, int size);
-
+     DetailedPokemon synchronizeLocalData(DetailedPokemon pokemon);
      Optional<DetailedPokemon> findByNameOrId(String identifier);
+     Optional<DetailedPokemon> findLocalById(String id);
 }

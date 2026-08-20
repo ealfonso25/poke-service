@@ -4,6 +4,7 @@ import com.bla_middleware.poke_service.internal.pokemon.domain.DetailedPokemon;
 import com.bla_middleware.poke_service.internal.pokemon.domain.Pokemon;
 import com.bla_middleware.poke_service.internal.pokemon.output.BrowsePokemonUseCase;
 import com.bla_middleware.poke_service.internal.pokemon.output.GetPokemonDetailsUseCase;
+import com.bla_middleware.poke_service.internal.pokemon.output.UpdatePokemonUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class PokemonController {
 
     private final BrowsePokemonUseCase browsePokemonUseCase;
     private final GetPokemonDetailsUseCase getPokemonDetailsUseCase;
+    private final UpdatePokemonUseCase updatePokemonUseCase;
 
     @GetMapping
     public ResponseEntity<List<Pokemon>> getPokemonPaginated(
@@ -31,5 +33,14 @@ public class PokemonController {
     public ResponseEntity<DetailedPokemon> getPokemonDetails(@PathVariable String identifier) {
         DetailedPokemon details = getPokemonDetailsUseCase.execute(identifier);
         return ResponseEntity.ok(details);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<DetailedPokemon> updateLocalPokemon(
+            @PathVariable String id,
+            @RequestBody DetailedPokemon request) {
+
+        DetailedPokemon updated = updatePokemonUseCase.execute(id, request);
+        return ResponseEntity.ok(updated);
     }
 }

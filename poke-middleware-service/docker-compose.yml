@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Service of MySQL (For the future management of users)
+  mysql-db:
+    image: mysql:8.0
+    container_name: pokemon-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: pokeservice_db
+      MYSQL_USER: poke_user
+      MYSQL_PASSWORD: poke_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Service of mongoDB (For the future management of Pokémon data)
+  mongo-db:
+    image: mongo:6.0
+    container_name: pokemon-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+      MONGO_INITDB_DATABASE: pokemon_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mysql_data:
+  mongo_data:
