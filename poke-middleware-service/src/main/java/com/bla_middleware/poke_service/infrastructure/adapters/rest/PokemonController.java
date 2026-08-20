@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pokemon")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.PUT})
 public class PokemonController {
 
     private final BrowsePokemonUseCase browsePokemonUseCase;

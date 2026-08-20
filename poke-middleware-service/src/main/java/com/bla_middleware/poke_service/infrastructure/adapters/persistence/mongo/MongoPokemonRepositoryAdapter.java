@@ -51,24 +51,23 @@ public class MongoPokemonRepositoryAdapter implements PokemonRepositoryPort {
         // 3. Transform the external API response into the domain model (Pokemon) and return it
         return apiResponse.results().stream()
                 .map(resource -> {
-                    // Extract the ID from the URL provided by PokeAPI (example: https://pokeapi.co)
-                    String url = resource.url();
-                    String[] urlParts = url.split("/");
-                    String id = urlParts[urlParts.length - 1];
+                    // 1. Extraemos el ID numérico de forma segura limpiando la barra final
+                    String url = resource.url(); // Ej: "https://pokeapi.co"
+                    String cleanUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                    String id = cleanUrl.substring(cleanUrl.lastIndexOf("/") + 1);
 
-                    // Create a provisional object with the name.
-                    // Technical note: In the list, PokeAPI does not provide sprites or bulk abilities,
-                    // so we mark the minimum data and trigger the asynchronous replication.
-                    Pokemon pokemonResumen = new Pokemon(
-                            id,
-                            resource.name(),
-                            "https://githubusercontent.com" + id + ".png", // Standard URL for sprites
-                            List.of(),
-                            0.0,
-                            List.of()
+                    // 2. Construimos la URL real del sprite oficial usando el ID numérico limpio
+                    String spriteUrl = "https://githubusercontent.com" + id + ".png";
+
+                    // 3. Retornamos el objeto Pokemon mapeado correctamente
+                    return new Pokemon(
+                            id,             // id (Usamos el número limpio como identificador único)
+                            resource.name(), // name
+                            spriteUrl,       // spriteUrl (¡Ahora sí es una imagen válida!)
+                            List.of(),       // categories
+                            0.0,             // mass
+                            List.of()        // skills
                     );
-
-                    return pokemonResumen;
                 })
                 .toList();
     }
@@ -106,10 +105,12 @@ public class MongoPokemonRepositoryAdapter implements PokemonRepositoryPort {
 
     @Override
     public DetailedPokemon synchronizeLocalData(DetailedPokemon pokemon) {
+        String spriteUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokemon.id() + ".png";
+
         PokemonDocument document = PokemonDocument.builder()
                 .id(pokemon.id())
                 .name(pokemon.name())
-                .spriteUrl(pokemon.imageUrl())
+                .spriteUrl(spriteUrl)
                 .categories(pokemon.evolutionaryLineage())
                 .mass(0.0)
                 .skills(List.of())
